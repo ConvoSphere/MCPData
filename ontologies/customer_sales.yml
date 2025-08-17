@@ -1,0 +1,26 @@
+entities:
+  - name: customer
+    description: Kundenstammdaten
+    table: customer
+    primary_key: customer_id
+  - name: order
+    description: Bestellungen
+    table: orders
+    primary_key: order_id
+
+dimensions:
+  - name: customer_name
+    column: customer_name
+    description: Name des Kunden
+  - name: order_date
+    column: order_date
+    description: Datum der Bestellung
+
+measures:
+  - name: total_revenue
+    expression: SUM(order_amount)
+    description: Gesamtumsatz
+
+synonyms:
+  customer: [kunde, klient]
+  order: [bestellung]

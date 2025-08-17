@@ -1,0 +1,24 @@
+site_name: DB Semantic Layer
+site_description: Abstraktions- und semantische Schicht für SQL-Datenbanken mit MCP
+repo_url: https://example.com/repo
+theme:
+  name: material
+  language: de
+nav:
+  - Start: index.md
+  - Konzepte:
+      - Architektur: concepts/architecture.md
+      - Semantische Schicht: concepts/semantic-layer.md
+      - MCP: concepts/mcp.md
+  - Anleitungen:
+      - Verbindungen konfigurieren: guides/configuring-connections.md
+      - NL zu SQL: guides/nl-to-sql.md
+      - Sicherheit: guides/security.md
+  - API: api/index.md
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+plugins:
+  - search
