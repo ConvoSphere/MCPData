@@ -4,6 +4,7 @@ import asyncio
 from typing import Optional
 from mcp.server.fastmcp import FastMCP
 from .tools import mcp
+from ..utils.telemetry import init_telemetry
 
 
 async def serve_stdio() -> None:
@@ -23,6 +24,7 @@ async def serve_http(host: str = "127.0.0.1", port: int = 8081) -> None:
 
 
 def run(server: str = "stdio", path: Optional[str] = None, host: str = "127.0.0.1", port: int = 8081) -> None:
+	init_telemetry("dbsl-mcp")
 	if server == "stdio":
 		asyncio.run(serve_stdio())
 	elif server == "unix":

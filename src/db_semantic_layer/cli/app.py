@@ -9,6 +9,9 @@ from ..core.schema_introspect import SchemaIntrospector
 from ..core.sql_validator import SQLValidator
 from ..mcp import server as mcp_server
 from ..core.config import settings
+from ..utils.telemetry import init_telemetry
+
+init_telemetry("dbsl-cli")
 
 app = typer.Typer(add_completion=True, help="DB Semantic Layer CLI")
 
