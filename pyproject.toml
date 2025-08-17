@@ -1,0 +1,77 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "db-semantic-layer"
+version = "0.1.0"
+description = "Abstraktions- und semantische Schicht für verschiedene SQL-Datenbanken mit MCP-Server und LLM-Unterstützung"
+readme = "README.md"
+authors = [
+  { name = "Your Name", email = "you@example.com" }
+]
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+keywords = ["sql", "sqlalchemy", "semantic", "nl2sql", "mcp", "llm", "dbt", "ontology"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "sqlalchemy>=2.0",
+  "pydantic>=2.6",
+  "pydantic-settings>=2.2",
+  "sqlglot>=25.0",
+  "typer[all]>=0.12",
+  "rich>=13.7",
+  "httpx>=0.27",
+  "python-dotenv>=1.0",
+  "mcp>=1.1",  # Model Context Protocol Python SDK
+  "litellm>=1.42",
+]
+
+[project.optional-dependencies]
+postgres = [
+  "psycopg[binary]>=3.1",
+]
+trino = [
+  "sqlalchemy-trino>=0.5",
+  "trino>=0.328",
+]
+mysql = [
+  "pymysql>=1.1",
+]
+telemetry = [
+  "opentelemetry-api>=1.26",
+  "opentelemetry-sdk>=1.26",
+  "opentelemetry-exporter-otlp>=1.26",
+  "opentelemetry-instrumentation-sqlalchemy>=0.47b0",
+]
+dev = [
+  "pytest>=8.2",
+  "pytest-asyncio>=0.23",
+  "mypy>=1.10",
+  "ruff>=0.5",
+  "mkdocs-material>=9.5",
+]
+
+[project.scripts]
+dbsl = "db_semantic_layer.cli.app:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/db_semantic_layer"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
