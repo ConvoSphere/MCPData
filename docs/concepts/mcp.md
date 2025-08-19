@@ -1,9 +1,9 @@
 # Model Context Protocol (MCP)
 
-Der Server stellt Tools und Ressourcen über Unix-Sockets und HTTP bereit.
+The server exposes tools over stdio, Unix sockets, and HTTP. Start via CLI: `dbsl mcp-serve --server unix --path /tmp/dbsl.sock` or `--server http`.
 
-Beispiel-Tools:
+Available tools:
 - connect_engine, list_connections
-- inspect_schema, describe_table
-- run_sql (read-only, Safe-Mode)
+- inspect_schema
+- run_sql (read-only, safe mode)
 - semantic_query

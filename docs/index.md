@@ -1,10 +1,10 @@
 # DB Semantic Layer
 
-Eine Abstraktions- und semantische Schicht für relationale Datenbanken über SQLAlchemy. Bietet eine NL→SQL-Funktionalität via LLM (litellm) und stellt Funktionen über das Model Context Protocol (MCP) für AI-Agenten bereit.
+A lightweight abstraction and semantic layer for relational databases via SQLAlchemy. It provides NL→SQL via an LLM (litellm) and exposes tools through the Model Context Protocol (MCP) for AI agents.
 
-- Unterstützte Dialekte (v0.1): PostgreSQL, Trino, MySQL
-- Sicherheit: Strikter Read-Only-Modus und SQL-Validierung
-- Transports: MCP über Unix-Socket und HTTP
-- Ontologie: DBT-ähnliches Modell (Entities, Dimensions, Measures)
+- Supported dialects: any SQLAlchemy dialect. Tested with SQLite; optional extras for PostgreSQL, Trino, and MySQL.
+- Security: strict read-only mode with SQL validation and automatic LIMIT.
+- Transports: MCP over stdio, Unix socket, and HTTP.
+- Ontology: simple, dbt-like model (Entities, Dimensions, Measures) available for custom pipelines; not wired into the default NL→SQL flow.
 
-Los geht's unter "Anleitungen" oder starte die CLI mit `dbsl --help`.
+Get started in Guides or run `dbsl --help`.

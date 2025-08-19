@@ -1,6 +1,6 @@
-# Demo: Trino Verbindung
+# Demo: Trino connection
 
-Beispiel-URL:
+Example URL:
 
 ```
 trino://user@host:8080/catalog/schema

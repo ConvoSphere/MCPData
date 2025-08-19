@@ -1,10 +1,10 @@
-# Architektur
+# Architecture
 
-Die Architektur gliedert sich in vier Schichten:
+Layers:
 
-1. Core (SQLAlchemy, Registry, Introspektion, SQL-Validierung)
-2. Semantik (Ontologie, Embeddings, Retrieval, NL→SQL)
-3. MCP (Server, Tools, Ressourcen) über Unix-Sockets und HTTP
-4. CLI/API (Bedienung, Automatisierung)
+1. Core (SQLAlchemy, engine registry, schema introspection, SQL validation)
+2. Semantics (ontology, embeddings, retriever, NL→SQL)
+3. MCP (server, tools) over stdio, Unix sockets, and HTTP
+4. CLI/API (operations, automation)
 
-Observability mit OpenTelemetry ist optional aktivierbar.
+Observability with OpenTelemetry can be enabled optionally (requires extras).

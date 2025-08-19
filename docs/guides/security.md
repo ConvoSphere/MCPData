@@ -1,6 +1,6 @@
-# Sicherheit
+# Security
 
-- Strikter Read-Only-Modus: DDL/DML blockiert
-- SQL-Validierung vor Ausführung (Whitelist SELECT)
-- Limits/Time-outs, optionale Voransicht mit EXPLAIN
-- Zugriffskontrolle über erlaubte Schemas/Tabellen
+- Strict read-only: only SELECT is allowed
+- SQL validation before execution (SELECT whitelist) and automatic LIMIT injection
+- Timeouts/EXPLAIN: not implemented
+- Access control by allowed schemas/tables: not implemented
