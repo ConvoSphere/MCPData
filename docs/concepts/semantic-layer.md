@@ -1,6 +1,6 @@
-# Semantische Schicht
+# Semantic layer
 
-- DBT-ähnliche Ontologie: Entities, Dimensions, Measures, Mappings auf physische Tabellen/Spalten.
-- Embeddings über litellm konfigurierbar (API-gestützt), alternativ lokal.
-- Retriever priorisiert relevante Schemafragmente für NL→SQL.
-- NL→SQL orchestriert Prompting, Validierung und Safe-Mode-Ausführung.
+- dbt-like ontology: Entities, Dimensions, Measures, mapping to physical tables/columns.
+- Embeddings via litellm (configurable).
+- In-memory retriever utility for similarity search.
+- NL→SQL currently uses a schema-only context by default; integrating ontology/embeddings is left to custom pipelines.

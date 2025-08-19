@@ -1,18 +1,18 @@
 # NL → SQL
 
-- Kontextaufbau: Schema- und Ontologie-Snippets via Retriever
-- Prompting über litellm (konfigurierbares Modell)
-- Validierung: SQL-Parsing (sqlglot), nur-SELECT, LIMIT erzwingen
-- Ausführung im Safe-Mode optional (zuerst EXPLAIN)
+- Context: by default, NL→SQL uses schema snippets (table/column names). Ontology/embeddings are available in the library, but not wired into the default CLI flow.
+- Prompting via litellm (configurable model in settings)
+- Validation: SQL parsing (sqlglot), SELECT-only, enforced LIMIT
+- Execution: safe mode enforces read-only and validation; no EXPLAIN phase is implemented.
 
-## Ontologie laden (YAML)
+## Load ontology (YAML)
 
-Beispiel `ontologies/customer_sales.yml`:
+Example `ontologies/customer_sales.yml`:
 
 ```yaml
 entities:
   - name: customer
-    description: Kundenstammdaten
+    description: Customer master data
     table: customer
     primary_key: customer_id
 
@@ -25,7 +25,7 @@ measures:
     expression: SUM(order_amount)
 ```
 
-In Python laden:
+In Python:
 
 ```python
 from db_semantic_layer.semantic.ontology_loader import load_ontology_from_yaml
