@@ -10,6 +10,8 @@ from ..core.sql_validator import SQLValidator
 from ..mcp import server as mcp_server
 from ..core.config import settings
 from ..utils.telemetry import init_telemetry
+from ..semantic.ontology_generation import build_schema_context, generate_ontology_yaml_from_context
+import yaml
 
 init_telemetry("dbsl-cli")
 
@@ -51,6 +53,35 @@ def sql(query: str, name: str = typer.Option(None), safe: bool = typer.Option(Tr
 		rows = res.fetchall()
 		cols = list(res.keys())
 	print(json.dumps({"columns": cols, "rows": [list(r) for r in rows]}, indent=2))
+
+
+@app.command()
+def ontology_generate(
+	name: str = typer.Option(None, help="Verbindungsname"),
+	db_schema: str = typer.Option(None, "--schema", help="DB-Schema/Namespace"),
+	outfile: str = typer.Option(None, help="Pfad für Ausgabe-YAML; wenn leer, Ausgabe auf STDOUT"),
+	language: str = typer.Option("de", help="Prompt-Sprache: de|en"),
+):
+	"""Erzeugt per LLM eine Ontologie (YAML) aus dem DB-Schema."""
+	mgr = get_global_engine_manager()
+	engine = mgr.get(name)
+	ins = SchemaIntrospector(engine)
+	snap = ins.snapshot(schema=db_schema)
+	schema_ctx = build_schema_context(schema=snap.model_dump())
+	yaml_text = generate_ontology_yaml_from_context(schema_context=schema_ctx, language=language)
+	# Validierung gegen Ontology-Modell (best-effort)
+	from ..semantic.ontology import Ontology
+	try:
+		data = yaml.safe_load(yaml_text) or {}
+		_ = Ontology(**data)
+	except Exception as exc:
+		print({"warning": f"YAML-Validierung fehlgeschlagen: {exc}"})
+	if outfile:
+		with open(outfile, "w", encoding="utf-8") as f:
+			f.write(yaml_text)
+		print({"written": outfile})
+	else:
+		print(yaml_text)
 
 
 @app.command("mcp-serve")
