@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Optional
-from mcp.server.fastmcp import FastMCP, Tool
+from mcp.server.fastmcp import FastMCP
 from sqlalchemy import text
 from ..core.engine_manager import get_global_engine_manager
 from ..core.schema_introspect import SchemaIntrospector

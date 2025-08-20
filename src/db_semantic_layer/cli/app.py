@@ -61,13 +61,31 @@ def ontology_generate(
 	db_schema: str = typer.Option(None, "--schema", help="DB-Schema/Namespace"),
 	outfile: str = typer.Option(None, help="Pfad für Ausgabe-YAML; wenn leer, Ausgabe auf STDOUT"),
 	language: str = typer.Option("de", help="Prompt-Sprache: de|en"),
+	samples: int = typer.Option(0, help="Optional: pro Tabelle bis zu N Beispielzeilen in den Prompt aufnehmen"),
 ):
 	"""Erzeugt per LLM eine Ontologie (YAML) aus dem DB-Schema."""
 	mgr = get_global_engine_manager()
 	engine = mgr.get(name)
 	ins = SchemaIntrospector(engine)
 	snap = ins.snapshot(schema=db_schema)
-	schema_ctx = build_schema_context(schema=snap.model_dump())
+	# Optionales Tabellensampling
+	sample_rows = None
+	if samples and samples > 0:
+		sample_rows = {}
+		from sqlalchemy import text as _text
+		with engine.connect() as conn:
+			for t in ins.list_tables(schema=db_schema):
+				fq_name = f"{db_schema}.{t.name}" if db_schema else t.name
+				try:
+					res = conn.execute(_text(f"SELECT * FROM {fq_name} LIMIT {int(samples)}"))
+					cols = list(res.keys())
+					rows = res.fetchall()
+					sample_rows[t.name] = [dict(zip(cols, r)) for r in rows]
+				except Exception:
+					# Sampling ist best-effort; bei Fehlern tabellenweise ignorieren
+					continue
+	
+	schema_ctx = build_schema_context(schema=snap.model_dump(), samples=sample_rows)
 	yaml_text = generate_ontology_yaml_from_context(schema_context=schema_ctx, language=language)
 	# Validierung gegen Ontology-Modell (best-effort)
 	from ..semantic.ontology import Ontology
