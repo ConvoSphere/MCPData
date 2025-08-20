@@ -13,6 +13,7 @@ nav:
   - Guides:
       - Configuring connections: guides/configuring-connections.md
       - NL to SQL: guides/nl-to-sql.md
+      - Ontology generation: guides/ontology-generation.md
       - Security: guides/security.md
   - API: api/index.md
 markdown_extensions:

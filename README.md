@@ -9,4 +9,5 @@ Quickstart:
 ```bash
 pip install -e .
 dbsl --help
+dbsl ontology-generate --help
 ```
