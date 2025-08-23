@@ -15,3 +15,8 @@ dbsl connections
 dbsl schema --name mypg --schema public
 dbsl sql --name mypg "select 1"
 ```
+
+Notes:
+- Install database drivers via extras, e.g., `pip install -e ".[postgres]"`, `.[trino]`, `.[mysql]`.
+- The first created connection becomes the default. Override with `--name` per command, or set `DBSL_DEFAULT_CONNECTION` in `.env` to pick a default name when multiple connections are present.
+- litellm requires provider credentials (e.g., `OPENAI_API_KEY`) when using LLM features.

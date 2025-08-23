@@ -2,32 +2,32 @@
 
 - Context: by default, NL→SQL uses schema snippets (table/column names). Ontology/embeddings are available in the library, but not wired into the default CLI flow.
 - Prompting via litellm (configurable model in settings)
-- Validation: SQL parsing (sqlglot), SELECT-only, enforced LIMIT
-- Execution: safe mode enforces read-only and validation; no EXPLAIN phase is implemented.
+- Validation: SQL parsing (sqlglot), SELECT‑only, enforced LIMIT
+- Execution: safe mode validates before execution; no EXPLAIN phase is implemented
 
-## Load ontology (YAML)
+## Via MCP tool
 
-Example `ontologies/customer_sales.yml`:
-
-```yaml
-entities:
-  - name: customer
-    description: Customer master data
-    table: customer
-    primary_key: customer_id
-
-dimensions:
-  - name: customer_name
-    column: customer_name
-
-measures:
-  - name: total_revenue
-    expression: SUM(order_amount)
+```bash
+# Start MCP server (stdio)
+dbsl mcp-serve --server stdio
 ```
 
-In Python:
+Client calls `semantic_query(question, name?)` and receives `{columns, rows, rowcount}`. Example question: "Top 5 products by price".
+
+## Programmatic usage
 
 ```python
-from db_semantic_layer.semantic.ontology_loader import load_ontology_from_yaml
-onto = load_ontology_from_yaml("ontologies/customer_sales.yml")
+from db_semantic_layer.semantic.nl2sql import NL2SQL
+from db_semantic_layer.semantic.ontology_generation import build_schema_context
+from db_semantic_layer.core.schema_introspect import SchemaIntrospector
+from db_semantic_layer.core.engine_manager import get_global_engine_manager
+
+mgr = get_global_engine_manager()
+engine = mgr.get("mydb")
+ins = SchemaIntrospector(engine)
+ctx = build_schema_context(ins.snapshot().model_dump())
+
+nl = NL2SQL(dialect=engine.name)
+sql = nl.generate_sql("Top 5 products by price", ctx)
+# sql is validated SELECT with LIMIT
 ```
