@@ -1,9 +1,11 @@
 [tool.ruff]
 line-length = 120
 target-version = "py313"
+exclude = [".venv", "venv", "build", "dist", "node_modules", ".ruff_cache", ".mypy_cache"]
+
+[tool.ruff.lint]
 extend-select = ["B", "I", "UP", "F"]
 ignore = []
-exclude = [".venv", "venv", "build", "dist", "node_modules", ".ruff_cache", ".mypy_cache"]
 
 
 

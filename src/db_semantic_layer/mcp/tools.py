@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, TypedDict, cast
+from typing import Any, TypedDict, cast
 
 from mcp.server.fastmcp import FastMCP
 from sqlalchemy import text
@@ -10,9 +10,10 @@ from ..core.schema_introspect import SchemaIntrospector
 from ..core.sql_validator import SQLValidator
 from ..semantic.nl2sql import NL2SQL
 
+
 class SQLResult(TypedDict):
-	columns: List[str]
-	rows: List[List[Any]]
+	columns: list[str]
+	rows: list[list[Any]]
 	rowcount: int
 
 mcp = FastMCP()
@@ -27,19 +28,19 @@ def connect_engine(name: str, url: str) -> str:
 
 
 @mcp.tool()
-def list_connections() -> Dict[str, str]:
+def list_connections() -> dict[str, str]:
 	"""Listet alle Verbindungen auf."""
 	mgr = get_global_engine_manager()
 	return mgr.list()
 
 
 @mcp.tool()
-def inspect_schema(name: str | None = None, schema: str | None = None) -> Dict[str, Any]:
+def inspect_schema(name: str | None = None, schema: str | None = None) -> dict[str, Any]:
 	mgr = get_global_engine_manager()
 	engine = mgr.get(name)
 	ins = SchemaIntrospector(engine)
 	# model_dump returns Dict[str, Any]
-	return cast(Dict[str, Any], ins.snapshot(schema=schema).model_dump())
+	return cast(dict[str, Any], ins.snapshot(schema=schema).model_dump())
 
 
 @mcp.tool()
@@ -52,7 +53,7 @@ def run_sql(sql: str, name: str | None = None, safe_mode: bool = True) -> SQLRes
 		res = conn.execute(text(validated_sql))
 		rows = res.fetchall()
 		cols = list(res.keys())
-	rows_list: List[List[Any]] = [list(r) for r in rows]
+	rows_list: list[list[Any]] = [list(r) for r in rows]
 	result: SQLResult = {"columns": cols, "rows": rows_list, "rowcount": len(rows_list)}
 	return result
 
