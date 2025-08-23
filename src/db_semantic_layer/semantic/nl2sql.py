@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import Optional
 from litellm import completion
-from ..core.config import settings
-from ..core.sql_validator import SQLValidator, SQLValidationError
 
+from ..core.config import settings
+from ..core.sql_validator import SQLValidationError, SQLValidator
 
 SYSTEM_PROMPT = (
 	"Du bist ein Assistent, der Nutzereingaben in SQL-SELECT-Abfragen übersetzt. "
@@ -13,7 +12,7 @@ SYSTEM_PROMPT = (
 
 
 class NL2SQL:
-	def __init__(self, dialect: Optional[str] = None) -> None:
+	def __init__(self, dialect: str | None = None) -> None:
 		self.validator = SQLValidator(dialect=dialect)
 
 	def generate_sql(self, question: str, schema_context: str) -> str:

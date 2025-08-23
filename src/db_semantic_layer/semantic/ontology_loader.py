@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from typing import Any
 import yaml
-from .ontology import Ontology, Entity, Dimension, Measure
+
+from .ontology import Dimension, Entity, Measure, Ontology
 
 
 def load_ontology_from_yaml(path: str) -> Ontology:
-	with open(path, "r", encoding="utf-8") as f:
+	with open(path, encoding="utf-8") as f:
 		data = yaml.safe_load(f) or {}
 	entities = [Entity(**e) for e in data.get("entities", [])]
 	dimensions = [Dimension(**d) for d in data.get("dimensions", [])]

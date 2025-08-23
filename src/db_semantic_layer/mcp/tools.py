@@ -1,13 +1,20 @@
 from __future__ import annotations
 
-from typing import Optional
+from typing import Any, TypedDict, cast
+
 from mcp.server.fastmcp import FastMCP
 from sqlalchemy import text
+
 from ..core.engine_manager import get_global_engine_manager
 from ..core.schema_introspect import SchemaIntrospector
 from ..core.sql_validator import SQLValidator
 from ..semantic.nl2sql import NL2SQL
 
+
+class SQLResult(TypedDict):
+	columns: list[str]
+	rows: list[list[Any]]
+	rowcount: int
 
 mcp = FastMCP()
 
@@ -21,22 +28,23 @@ def connect_engine(name: str, url: str) -> str:
 
 
 @mcp.tool()
-def list_connections() -> dict:
+def list_connections() -> dict[str, str]:
 	"""Listet alle Verbindungen auf."""
 	mgr = get_global_engine_manager()
 	return mgr.list()
 
 
 @mcp.tool()
-def inspect_schema(name: Optional[str] = None, schema: Optional[str] = None) -> dict:
+def inspect_schema(name: str | None = None, schema: str | None = None) -> dict[str, Any]:
 	mgr = get_global_engine_manager()
 	engine = mgr.get(name)
 	ins = SchemaIntrospector(engine)
-	return ins.snapshot(schema=schema).model_dump()
+	# model_dump returns Dict[str, Any]
+	return cast(dict[str, Any], ins.snapshot(schema=schema).model_dump())
 
 
 @mcp.tool()
-def run_sql(sql: str, name: Optional[str] = None, safe_mode: bool = True) -> dict:
+def run_sql(sql: str, name: str | None = None, safe_mode: bool = True) -> SQLResult:
 	mgr = get_global_engine_manager()
 	engine = mgr.get(name)
 	validator = SQLValidator(dialect=engine.name)
@@ -45,11 +53,13 @@ def run_sql(sql: str, name: Optional[str] = None, safe_mode: bool = True) -> dic
 		res = conn.execute(text(validated_sql))
 		rows = res.fetchall()
 		cols = list(res.keys())
-	return {"columns": cols, "rows": [list(r) for r in rows], "rowcount": len(rows)}
+	rows_list: list[list[Any]] = [list(r) for r in rows]
+	result: SQLResult = {"columns": cols, "rows": rows_list, "rowcount": len(rows_list)}
+	return result
 
 
 @mcp.tool()
-def semantic_query(question: str, name: Optional[str] = None) -> dict:
+def semantic_query(question: str, name: str | None = None) -> SQLResult:
 	mgr = get_global_engine_manager()
 	engine = mgr.get(name)
 	# Minimales Schema als Kontext
@@ -60,4 +70,4 @@ def semantic_query(question: str, name: Optional[str] = None) -> dict:
 	)
 	nl = NL2SQL(dialect=engine.name)
 	sql = nl.generate_sql(question, schema_text)
-	return run_sql(sql=sql, name=name, safe_mode=True)
+	return cast(SQLResult, run_sql(sql=sql, name=name, safe_mode=True))

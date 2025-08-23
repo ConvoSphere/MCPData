@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 import json
+import re
+import tempfile
+
 import typer
+import yaml
 from rich import print
 from sqlalchemy import text
+
 from ..core.engine_manager import get_global_engine_manager
 from ..core.schema_introspect import SchemaIntrospector
 from ..core.sql_validator import SQLValidator
 from ..mcp import server as mcp_server
-from ..core.config import settings
-from ..utils.telemetry import init_telemetry
 from ..semantic.ontology_generation import build_schema_context, generate_ontology_yaml_from_context
-import yaml
+from ..utils.telemetry import init_telemetry
 
 init_telemetry("dbsl-cli")
 
@@ -76,14 +79,21 @@ def ontology_generate(
 		with engine.connect() as conn:
 			for t in ins.list_tables(schema=db_schema):
 				fq_name = f"{db_schema}.{t.name}" if db_schema else t.name
+				# Validate identifier parts conservatively to avoid SQL injection
+				parts = fq_name.split(".")
+				if not all(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", p) for p in parts):
+					print({"warning": f"Überspringe Tabelle mit ungültigem Namen: {fq_name}"})
+					continue
+				# Quote identifier parts using the dialect preparer
+				quoted = ".".join(engine.dialect.identifier_preparer.quote(p) for p in parts)
 				try:
-					res = conn.execute(_text(f"SELECT * FROM {fq_name} LIMIT {int(samples)}"))
+					stmt = _text(f"SELECT * FROM {quoted} LIMIT :lim")  # nosec B608
+					res = conn.execute(stmt, {"lim": int(samples)})
 					cols = list(res.keys())
 					rows = res.fetchall()
-					sample_rows[t.name] = [dict(zip(cols, r)) for r in rows]
-				except Exception:
-					# Sampling ist best-effort; bei Fehlern tabellenweise ignorieren
-					continue
+					sample_rows[t.name] = [dict(zip(cols, r, strict=False)) for r in rows]
+				except Exception as exc:
+					print({"warning": f"Sampling fehlgeschlagen für {fq_name}: {exc}"})
 	
 	schema_ctx = build_schema_context(schema=snap.model_dump(), samples=sample_rows)
 	yaml_text = generate_ontology_yaml_from_context(schema_context=schema_ctx, language=language)
@@ -105,10 +115,12 @@ def ontology_generate(
 @app.command("mcp-serve")
 def mcp_serve(
 	server: str = typer.Option("unix", help="stdio|unix|http"),
-	path: str = typer.Option("/tmp/dbsl.sock", help="Unix-Socket Pfad"),
+	path: str = typer.Option(None, help="Unix-Socket Pfad"),
 	host: str = typer.Option("127.0.0.1"),
 	port: int = typer.Option(8081),
 ) -> None:
+	if path is None:
+		path = f"{tempfile.gettempdir()}/dbsl.sock"
 	mcp_server.run(server=server, path=path, host=host, port=port)
 
 

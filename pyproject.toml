@@ -1,3 +1,25 @@
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+exclude = [".venv", "venv", "build", "dist", "node_modules", ".ruff_cache", ".mypy_cache"]
+
+[tool.ruff.lint]
+extend-select = ["B", "I", "UP", "F"]
+ignore = []
+
+
+
+[tool.mypy]
+python_version = "3.13"
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = [".venv", "venv", "build", "dist", "node_modules", ".ruff_cache", ".mypy_cache"]
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv", "venv", "build", "dist"]
 [build-system]
 requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
@@ -65,16 +87,6 @@ dbsl = "db_semantic_layer.cli.app:app"
 [tool.hatch.build.targets.wheel]
 packages = ["src/db_semantic_layer"]
 
-[tool.ruff]
-line-length = 100
-
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
-
-[tool.mypy]
-python_version = "3.10"
-ignore_missing_imports = true
-strict_optional = true
-warn_redundant_casts = true
-warn_unused_ignores = true

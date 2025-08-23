@@ -25,7 +25,7 @@ def test_semantic_query_with_mocked_llm(monkeypatch):
 		)
 
 	# Mock the completion function used by NL2SQL to return a simple valid SQL
-	def fake_completion(model, messages):  # type: ignore
+	def fake_completion(model, messages):
 		return {
 			"choices": [
 				{

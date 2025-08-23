@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import json
 from typer.testing import CliRunner
+
 from db_semantic_layer.cli.app import app
 from db_semantic_layer.core.engine_manager import get_global_engine_manager
-
 
 runner = CliRunner()
 
@@ -35,7 +34,7 @@ def test_ontology_generate_with_sqlite_monkeypatch(monkeypatch):
 		)
 
 	# Monkeypatch litellm.completion to return a deterministic YAML
-	def fake_completion(model, messages):  # type: ignore
+	def fake_completion(model, messages):
 		return {
 			"choices": [
 				{
@@ -61,7 +60,7 @@ def test_ontology_generate_with_sqlite_monkeypatch(monkeypatch):
 	monkeypatch.setitem(__import__("sys").modules, "litellm", type("M", (), {"completion": staticmethod(fake_completion)})())
 
 	# Run CLI: output to stdout
-	result = runner.invoke(app, ["ontology-generate", "--name", "mem", "--language", "de"])  # type: ignore
+	result = runner.invoke(app, ["ontology-generate", "--name", "mem", "--language", "de"]) 
 	assert result.exit_code == 0, result.output
 	text = result.output.strip()
 	assert "entities:" in text

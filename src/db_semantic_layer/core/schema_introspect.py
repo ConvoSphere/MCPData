@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from typing import List, Optional
 from sqlalchemy import inspect
 from sqlalchemy.engine import Engine
-from .models import TableInfo, ColumnInfo, SchemaSnapshot
+
+from .models import ColumnInfo, SchemaSnapshot, TableInfo
 
 
 class SchemaIntrospector:
 	def __init__(self, engine: Engine) -> None:
 		self.engine = engine
 
-	def list_tables(self, schema: Optional[str] = None) -> List[TableInfo]:
+	def list_tables(self, schema: str | None = None) -> list[TableInfo]:
 		inspector = inspect(self.engine)
-		tables: List[TableInfo] = []
+		tables: list[TableInfo] = []
 		for table_name in inspector.get_table_names(schema=schema):
 			columns = []
 			for col in inspector.get_columns(table_name, schema=schema):
@@ -39,6 +39,6 @@ class SchemaIntrospector:
 			)
 		return tables
 
-	def snapshot(self, schema: Optional[str] = None) -> SchemaSnapshot:
+	def snapshot(self, schema: str | None = None) -> SchemaSnapshot:
 		tables = self.list_tables(schema=schema)
 		return SchemaSnapshot(connection=str(self.engine.url), Dialect=self.engine.name, tables=tables)
