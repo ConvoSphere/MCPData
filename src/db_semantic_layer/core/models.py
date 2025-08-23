@@ -20,7 +20,7 @@ class ColumnInfo(BaseModel):
 
 
 class TableInfo(BaseModel):
-	schema: str | None
+	schema_name: str | None
 	name: str
 	columns: list[ColumnInfo] = Field(default_factory=list)
 	primary_key: list[str] = Field(default_factory=list)

@@ -18,7 +18,7 @@ class SchemaIntrospector:
 			for col in inspector.get_columns(table_name, schema=schema):
 				columns.append(
 					ColumnInfo(
-						name=col.get("name"),
+						name=str(col.get("name")),
 						type=str(col.get("type")),
 						nullable=bool(col.get("nullable", True)),
 						default=col.get("default"),
@@ -35,7 +35,7 @@ class SchemaIntrospector:
 				for c in cols:
 					fks[c] = referred or ""
 			tables.append(
-				TableInfo(schema=schema, name=table_name, columns=columns, primary_key=pks, foreign_keys=fks)
+				TableInfo(schema_name=schema, name=table_name, columns=columns, primary_key=pks, foreign_keys=fks)
 			)
 		return tables
 
