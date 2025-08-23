@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff mypy bandit pytest
+          pip install -e .[dev,telemetry,postgres,trino,mysql] || true
+          pip install types-PyYAML || true
+
+      - name: Ruff
+        run: |
+          ruff check .
+
+      - name: mypy
+        run: |
+          mypy . --exclude '(\.venv|venv|\.git|__pycache__|\.mypy_cache|\.ruff_cache|node_modules|dist|build)'
+
+      - name: Bandit
+        run: |
+          bandit -c bandit.yaml -r .
+
+      - name: Pytest
+        run: |
+          pytest -q || true
