@@ -13,4 +13,4 @@ Public modules:
 - `db_semantic_layer.mcp`
   - Tools: `connect_engine`, `list_connections`, `inspect_schema`, `run_sql`, `semantic_query`
 
-CLI entrypoint: `dbsl`.
+CLI entrypoint: `dbsl` (Typer app).
