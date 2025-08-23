@@ -40,7 +40,7 @@ def inspect_schema(name: str | None = None, schema: str | None = None) -> dict[s
 	engine = mgr.get(name)
 	ins = SchemaIntrospector(engine)
 	# model_dump returns Dict[str, Any]
-	return cast(dict[str, Any], ins.snapshot(schema=schema).model_dump())
+	return ins.snapshot(schema=schema).model_dump()
 
 
 @mcp.tool()
