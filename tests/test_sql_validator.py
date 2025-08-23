@@ -1,5 +1,6 @@
 import pytest
-from db_semantic_layer.core.sql_validator import SQLValidator, SQLValidationError
+
+from db_semantic_layer.core.sql_validator import SQLValidationError, SQLValidator
 
 
 def test_validator_allows_select_and_enforces_limit():

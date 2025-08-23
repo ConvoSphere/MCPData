@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 from ..core.config import settings
 
 
@@ -28,15 +29,15 @@ def _extract_yaml_block(text: str) -> str:
 
 
 def build_schema_context(
-	schema: Dict[str, Any],
-	samples: Optional[Dict[str, List[Dict[str, Any]]]] = None,
+	schema: dict[str, Any],
+	samples: dict[str, list[dict[str, Any]]] | None = None,
 ) -> str:
 	"""Build a concise, LLM-friendly schema context string from a schema snapshot dict.
 
 	The expected schema dict structure follows `SchemaSnapshot.model_dump()`.
 	"""
 	tables = schema.get("tables", [])
-	lines: List[str] = []
+	lines: list[str] = []
 	for t in tables:
 		name = t.get("name")
 		cols = ", ".join(f"{c.get('name')}:{c.get('type')}" for c in t.get("columns", []))
@@ -61,12 +62,12 @@ def build_schema_context(
 
 def generate_ontology_yaml_from_context(
 	schema_context: str,
-	llm_model: Optional[str] = None,
+	llm_model: str | None = None,
 	language: str = "de",
 ) -> str:
 	"""Call the LLM via litellm to produce ontology YAML from a schema context string."""
 	# Lazy import to avoid hard dependency at import time
-	from litellm import completion  # type: ignore
+	from litellm import completion
 
 	model_name = llm_model or settings.llm_model
 	if language.lower().startswith("de"):
